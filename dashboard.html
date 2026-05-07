@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - Salon Amr</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .login-container, .dashboard-container {
+            max-width: 500px;
+            margin: 50px auto;
+            background: #000;
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid #d4af37;
+            box-shadow: 0 10px 40px rgba(212, 175, 55, 0.2);
+        }
+        .dashboard-container { max-width: 1400px; }
+        h1, h2 { color: #d4af37; text-align: center; margin-bottom: 20px; }
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #1a1a1a;
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+        }
+        button {
+            background: linear-gradient(135deg, #d4af37 0%, #b8960c 100%);
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover { transform: translateY(-2px); }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            overflow-x: auto;
+            display: block;
+        }
+        th, td {
+            border: 1px solid #d4af37;
+            padding: 10px;
+            text-align: center;
+            color: white;
+        }
+        th { background: rgba(212, 175, 55, 0.2); color: #d4af37; }
+        .delete-btn, .edit-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 3px;
+        }
+        .delete-btn { background: #dc3545; color: white; }
+        .delete-btn:hover { background: #c82333; }
+        .edit-btn { background: #d4af37; color: #000; }
+        .edit-btn:hover { background: #b8960c; }
+        .logout-btn, .refresh-btn {
+            background: #333;
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+        .refresh-btn { background: #17a2b8; color: white; }
+        .export-btn { background: #28a745; color: white; }
+        .stats {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            background: #1a1a1a;
+            border: 1px solid #d4af37;
+            border-radius: 12px;
+            padding: 15px 25px;
+            text-align: center;
+        }
+        .stat-card h3 { color: #d4af37; margin-bottom: 10px; }
+        .stat-card .number { font-size: 2em; color: #ffd700; font-weight: bold; }
+        .error { color: #ff4444; text-align: center; margin-top: 10px; }
+        .hidden { display: none; }
+        .tab { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab button {
+            flex: 1;
+            background: #1a1a1a;
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            margin: 0;
+        }
+        .tab button.active { background: #d4af37; color: #000; }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #d4af37;
+            text-decoration: none;
+        }
+        .back-link:hover { text-decoration: underline; }
+        .add-form {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #d4af37;
+        }
+        .add-form h3 { color: #d4af37; margin-bottom: 15px; }
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #1a1a1a;
+            border: 2px solid #d4af37;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+        }
+        .modal-content h3 { color: #d4af37; margin-bottom: 20px; }
+        .close-modal { background: #333; margin-top: 10px; }
+        @media (max-width: 768px) { .form-row { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div id="loginSection" class="login-container">
+        <h1 class="gold-text">🔐 دخول لوحة التحكم</h1>
+        <input type="text" id="username" placeholder="اسم المستخدم">
+        <input type="password" id="password" placeholder="كلمة المرور">
+        <button onclick="login()">دخول</button>
+        <div id="loginError" class="error"></div>
+    </div>
+
+    <div id="dashboardSection" class="dashboard-container hidden">
+        <h1>📊 لوحة تحكم Salon Amr</h1>
+        <a href="index.html" class="back-link">← العودة إلى صفحة الحجز</a>
+        <button class="logout-btn" onclick="logout()">🚪 تسجيل خروج</button>
+        <button class="refresh-btn" onclick="loadData()">🔄 تحديث البيانات</button>
+        <button class="export-btn" onclick="exportData()">📥 تصدير نسخة احتياطية</button>
+        
+        <div class="stats" id="stats"></div>
+        
+        <div class="add-form">
+            <h3>➕ إضافة حجز يدوي</h3>
+            <div class="form-row">
+                <input type="text" id="newName" placeholder="اسم العميل">
+                <input type="text" id="newPhone" placeholder="رقم الموبايل">
+                <select id="newBarber">
+                    <option value="عمرو">عمرو</option>
+                    <option value="يوسف">يوسف</option>
+                    <option value="سعد">سعد</option>
+                </select>
+                <input type="date" id="newDate">
+                <select id="newTime">
+                    <option value="01:00 ظهراً">01:00 ظهراً</option><option value="02:00 مساءً">02:00 مساءً</option>
+                    <option value="03:00 مساءً">03:00 مساءً</option><option value="04:00 مساءً">04:00 مساءً</option>
+                    <option value="05:00 مساءً">05:00 مساءً</option><option value="06:00 مساءً">06:00 مساءً</option>
+                    <option value="07:00 مساءً">07:00 مساءً</option><option value="08:00 مساءً">08:00 مساءً</option>
+                    <option value="09:00 مساءً">09:00 مساءً</option><option value="10:00 مساءً">10:00 مساءً</option>
+                    <option value="11:00 مساءً">11:00 مساءً</option><option value="12:00 منتصف الليل">12:00 منتصف الليل</option>
+                    <option value="01:00 صباحاً">01:00 صباحاً</option>
+                </select>
+                <input type="text" id="newServices" placeholder="الخدمات">
+                <input type="number" id="newPrice" placeholder="السعر">
+                <button onclick="addManualBooking()">➕ إضافة حجز</button>
+            </div>
+        </div>
+        
+        <div class="tab">
+            <button class="active" onclick="showTab('bookings')">📋 الحجوزات</button>
+            <button onclick="showTab('waiting')">⏳ قوائم الانتظار</button>
+        </div>
+        
+        <div id="bookingsTab">
+            <div style="overflow-x: auto;">
+                <table id="bookingsTable">
+                    <thead><tr><th>#</th><th>التاريخ</th><th>الوقت</th><th>الحلاق</th><th>العميل</th><th>الموبايل</th><th>الخدمات</th><th>السعر</th><th>التحكم</th></tr></thead>
+                    <tbody id="bookingsBody"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="waitingTab" class="hidden">
+            <div class="add-form">
+                <h3>➕ إضافة إلى قائمة الانتظار</h3>
+                <div class="form-row">
+                    <input type="text" id="waitName" placeholder="اسم العميل">
+                    <input type="text" id="waitPhone" placeholder="رقم الموبايل">
+                    <select id="waitBarber">
+                        <option value="عمرو">عمرو</option><option value="يوسف">يوسف</option><option value="سعد">سعد</option>
+                    </select>
+                    <input type="date" id="waitDate">
+                    <button onclick="addManualWaiting()">➕ إضافة</button>
+                </div>
+            </div>
+            <div style="overflow-x: auto;">
+                <table id="waitingTable">
+                    <thead><tr><th>#</th><th>التاريخ</th><th>الحلاق</th><th>العميل</th><th>الموبايل</th><th>حذف</th></tr></thead>
+                    <tbody id="waitingBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h3>✏️ تعديل الحجز</h3>
+            <input type="text" id="editName" placeholder="الاسم">
+            <input type="text" id="editPhone" placeholder="رقم الموبايل">
+            <input type="text" id="editServices" placeholder="الخدمات">
+            <input type="number" id="editPrice" placeholder="السعر">
+            <button onclick="saveEdit()">💾 حفظ التعديلات</button>
+            <button class="close-modal" onclick="closeModal()">إلغاء</button>
+        </div>
+    </div>
+
+    <script>
+        let localBookings = [];
+        let localWaiting = [];
+        let currentEditId = null;
+        
+        function loadLocalData() {
+            const savedBookings = localStorage.getItem('salon_bookings');
+            const savedWaiting = localStorage.getItem('salon_waiting');
+            
+            localBookings = savedBookings ? JSON.parse(savedBookings) : [];
+            localWaiting = savedWaiting ? JSON.parse(savedWaiting) : [];
+        }
+        
+        function saveLocalData() {
+            localStorage.setItem('salon_bookings', JSON.stringify(localBookings));
+            localStorage.setItem('salon_waiting', JSON.stringify(localWaiting));
+        }
+        
+        function exportData() {
+            loadLocalData();
+            const data = {
+                bookings: localBookings,
+                waiting: localWaiting,
+                exportDate: new Date().toISOString()
+            };
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `salon_amr_backup_${new Date().toISOString().slice(0,19)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            alert('✅ تم تصدير البيانات بنجاح');
+        }
+        
+        function displayBookings() {
+            const tbody = document.getElementById('bookingsBody');
+            tbody.innerHTML = '';
+            
+            if (localBookings.length === 0) {
+                tbody.innerHTML = '<td><td colspan="9">لا توجد حجوزات</td></tr>';
+                return;
+            }
+            
+            localBookings.slice().reverse().forEach((booking, index) => {
+                const row = tbody.insertRow();
+                row.insertCell(0).innerHTML = localBookings.length - index;
+                row.insertCell(1).innerHTML = booking.date || '-';
+                row.insertCell(2).innerHTML = booking.time || '-';
+                row.insertCell(3).innerHTML = booking.barber || '-';
+                row.insertCell(4).innerHTML = booking.name || '-';
+                row.insertCell(5).innerHTML = booking.phone || '-';
+                row.insertCell(6).innerHTML = booking.services || '-';
+                row.insertCell(7).innerHTML = booking.total_price ? booking.total_price + ' ج' : '-';
+                const actionCell = row.insertCell(8);
+                
+                const editBtn = document.createElement('button');
+                editBtn.textContent = '✏️ تعديل';
+                editBtn.className = 'edit-btn';
+                editBtn.onclick = () => openEditModal(booking);
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = '🗑️ حذف';
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.onclick = () => deleteBooking(booking.id);
+                
+                actionCell.appendChild(editBtn);
+                actionCell.appendChild(deleteBtn);
+            });
+        }
+        
+        function displayWaiting() {
+            const tbody = document.getElementById('waitingBody');
+            tbody.innerHTML = '';
+            
+            if (localWaiting.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5">لا توجد زبائن في الانتظار</td></tr>';
+                return;
+            }
+            
+            localWaiting.slice().reverse().forEach((item, index) => {
+                const row = tbody.insertRow();
+                row.insertCell(0).innerHTML = localWaiting.length - index;
+                row.insertCell(1).innerHTML = item.date || '-';
+                row.insertCell(2).innerHTML = item.barber || '-';
+                row.insertCell(3).innerHTML = item.name || '-';
+                row.insertCell(4).innerHTML = item.phone || '-';
+                const deleteCell = row.insertCell(5);
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = '🗑️ حذف';
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.onclick = () => deleteWaiting(item.id);
+                deleteCell.appendChild(deleteBtn);
+            });
+        }
+        
+        function openEditModal(booking) {
+            currentEditId = booking.id;
+            document.getElementById('editName').value = booking.name || '';
+            document.getElementById('editPhone').value = booking.phone || '';
+            document.getElementById('editServices').value = booking.services || '';
+            document.getElementById('editPrice').value = booking.total_price || '';
+            document.getElementById('editModal').style.display = 'flex';
+        }
+        
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+            currentEditId = null;
+        }
+        
+        function saveEdit() {
+            if (!currentEditId) return;
+            
+            const index = localBookings.findIndex(b => b.id === currentEditId);
+            if (index !== -1) {
+                localBookings[index].name = document.getElementById('editName').value;
+                localBookings[index].phone = document.getElementById('editPhone').value;
+                localBookings[index].services = document.getElementById('editServices').value;
+                localBookings[index].total_price = parseInt(document.getElementById('editPrice').value) || 0;
+                saveLocalData();
+                displayBookings();
+                updateStats();
+                alert('✅ تم تعديل الحجز بنجاح');
+            }
+            closeModal();
+        }
+        
+        function deleteBooking(id) {
+            if (!confirm('هل أنت متأكد من حذف هذا الحجز؟')) return;
+            
+            const index = localBookings.findIndex(b => b.id === id);
+            if (index !== -1) {
+                localBookings.splice(index, 1);
+                saveLocalData();
+                displayBookings();
+                updateStats();
+                alert('✅ تم حذف الحجز بنجاح');
+            }
+        }
+        
+        function deleteWaiting(id) {
+            if (!confirm('هل أنت متأكد من حذف هذا من قائمة الانتظار؟')) return;
+            
+            const index = localWaiting.findIndex(w => w.id === id);
+            if (index !== -1) {
+                localWaiting.splice(index, 1);
+                saveLocalData();
+                displayWaiting();
+                updateStats();
+                alert('✅ تم الحذف بنجاح');
+            }
+        }
+        
+        function addManualBooking() {
+            const name = document.getElementById('newName').value.trim();
+            const phone = document.getElementById('newPhone').value.trim();
+            const barber = document.getElementById('newBarber').value;
+            const date = document.getElementById('newDate').value;
+            const time = document.getElementById('newTime').value;
+            const services = document.getElementById('newServices').value.trim() || "لم يحدد";
+            const price = document.getElementById('newPrice').value;
+            
+            if (!name || !phone || !date) {
+                alert('❌ املأ البيانات الأساسية');
+                return;
+            }
+            
+            const newBooking = {
+                id: Date.now(),
+                timestamp: new Date().toISOString(),
+                name, phone, barber, date, time,
+                services: services,
+                total_price: parseInt(price) || 0
+            };
+            
+            localBookings.push(newBooking);
+            saveLocalData();
+            displayBookings();
+            updateStats();
+            
+            document.getElementById('newName').value = '';
+            document.getElementById('newPhone').value = '';
+            document.getElementById('newServices').value = '';
+            document.getElementById('newPrice').value = '';
+            
+            alert('✅ تم إضافة الحجز');
+        }
+        
+        function addManualWaiting() {
+            const name = document.getElementById('waitName').value.trim();
+            const phone = document.getElementById('waitPhone').value.trim();
+            const barber = document.getElementById('waitBarber').value;
+            const date = document.getElementById('waitDate').value;
+            
+            if (!name || !phone || !date) {
+                alert('❌ املأ البيانات');
+                return;
+            }
+            
+            const newWaiting = {
+                id: Date.now(),
+                timestamp: new Date().toISOString(),
+                barber, name, phone, date
+            };
+            
+            localWaiting.push(newWaiting);
+            saveLocalData();
+            displayWaiting();
+            updateStats();
+            
+            document.getElementById('waitName').value = '';
+            document.getElementById('waitPhone').value = '';
+            
+            alert('✅ تم الإضافة إلى قائمة الانتظار');
+        }
+        
+        function updateStats() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayBookings = localBookings.filter(b => b.date === today).length;
+            const totalBookings = localBookings.length;
+            const totalWaiting = localWaiting.length;
+            
+            document.getElementById('stats').innerHTML = `
+                <div class="stat-card"><h3>📅 حجوزات اليوم</h3><div class="number">${todayBookings}</div></div>
+                <div class="stat-card"><h3>📋 إجمالي الحجوزات</h3><div class="number">${totalBookings}</div></div>
+                <div class="stat-card"><h3>⏳ قائمة الانتظار</h3><div class="number">${totalWaiting}</div></div>
+            `;
+        }
+        
+        function loadData() {
+            loadLocalData();
+            displayBookings();
+            displayWaiting();
+            updateStats();
+        }
+        
+        function showTab(tab) {
+            if (tab === 'bookings') {
+                document.getElementById('bookingsTab').classList.remove('hidden');
+                document.getElementById('waitingTab').classList.add('hidden');
+                document.querySelectorAll('.tab button').forEach((btn, i) => btn.classList.toggle('active', i === 0));
+                displayBookings();
+            } else {
+                document.getElementById('bookingsTab').classList.add('hidden');
+                document.getElementById('waitingTab').classList.remove('hidden');
+                document.querySelectorAll('.tab button').forEach((btn, i) => btn.classList.toggle('active', i === 1));
+                displayWaiting();
+            }
+        }
+        
+        function setDefaultDates() {
+            const today = new Date().toISOString().split('T')[0];
+            const newDate = document.getElementById('newDate');
+            const waitDate = document.getElementById('waitDate');
+            if (newDate) newDate.value = today;
+            if (waitDate) waitDate.value = today;
+        }
+        
+        function checkAuth() {
+            if (localStorage.getItem('admin_logged_in') === 'true') {
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('dashboardSection').classList.remove('hidden');
+                loadData();
+                setDefaultDates();
+            } else {
+                document.getElementById('loginSection').classList.remove('hidden');
+                document.getElementById('dashboardSection').classList.add('hidden');
+            }
+        }
+        
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === 'admin' && password === 'AmrSalon2026') {
+                localStorage.setItem('admin_logged_in', 'true');
+                checkAuth();
+                document.getElementById('loginError').innerHTML = '';
+            } else {
+                document.getElementById('loginError').innerHTML = '❌ اسم المستخدم أو كلمة المرور غير صحيحة';
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('admin_logged_in');
+            checkAuth();
+        }
+        
+        checkAuth();
+    </script>
+</body>
+</html>

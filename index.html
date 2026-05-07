@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salon Amr | حجز موعد</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <img src="WhatsApp Image 2026-05-06 at 5.54.07 PM.jpeg" alt="Salon Amr Logo" class="logo">
+        </div>
+        
+        <h1 class="gold-text">SALON AMR</h1>
+        <p class="subtitle">احجز موعدك مع أفضل الحلاقين</p>
+        
+        <div class="booking-card">
+            <div class="form-group">
+                <label>اختر الحلاق</label>
+                <select id="barber" class="gold-input">
+                    <option value="عمرو">عمرو</option>
+                    <option value="يوسف">يوسف</option>
+                    <option value="سعد">سعد</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>اختر التاريخ</label>
+                <input type="date" id="date" class="gold-input">
+            </div>
+            
+            <div class="form-group">
+                <label>اختر الساعة (من 1 ظهراً لـ 1 بليل)</label>
+                <select id="time" class="gold-input">
+                    <option value="">-- اختر الساعة --</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>📋 نوع الخدمة (يمكنك اختيار أكثر من خدمة)</label>
+                <div class="services-container">
+                    <div class="services-category">
+                        <div class="category-title">✂️ خدمات الحلاقة</div>
+                        <div class="services-grid">
+                            <label class="service-checkbox"><input type="checkbox" value="حلاقه شعر|120"> <span class="service-name">حلاقه شعر</span> <span class="service-price"></span></label>
+                            <label class="service-checkbox"><input type="checkbox" value="حلاقه شعر + ذقن|150"> <span class="service-name">حلاقه شعر + ذقن</span> <span class="service-price"></span></label>
+                            <label class="service-checkbox"><input type="checkbox" value="حلاقه ذقن|50"> <span class="service-name">حلاقه ذقن</span> <span class="service-price"></span></label>
+                            <label class="service-checkbox"><input type="checkbox" value="حلاقه شعر + ذقن + سشوار|180"> <span class="service-name">حلاقه شعر + ذقن + سشوار</span> <span class="service-price"></span></label>
+                            <label class="service-checkbox"><input type="checkbox" value="حلاقه شعر + ذقن + كيرلى|180"> <span class="service-name">حلاقه شعر + ذقن + كيرلى</span> <span class="service-price"></span></label>
+                            <label class="service-checkbox"><input type="checkbox" value="تحديد + سشوار|70"> <span class="service-name">تحديد + سشوار</span> <span class="service-price"></span></label>
+                            <label class="service-checkbox"><input type="checkbox" value="تحديد + كيرلى|70"> <span class="service-name">تحديد + كيرلى</span> <span class="service-price"></span></label>
+                        </div>
+                    </div>
+                    <div class="services-category">
+                        <div class="category-title">💆‍♂️ خدمات العناية</div>
+                        <div class="services-grid">
+                            <label class="service-checkbox"><input type="checkbox" value="جلسه تنظيف بشرة|350"> <span class="service-name">جلسه تنظيف بشرة</span> <span class="service-price"></span></label>
+                            <label class="service-checkbox"><input type="checkbox" value="جلسه ترميم شعر|70"> <span class="service-name">جلسه ترميم شعر</span> <span class="service-price"></span></label>
+                        </div>
+                    </div>
+                    <div class="services-category">
+                        <div class="category-title">🎨 خدمات الصبغات</div>
+                        <div class="services-grid">
+                            <label class="service-checkbox"><input type="checkbox" value="صبغه سوداء|70"> <span class="service-name">صبغه سوداء</span> <span class="service-price"></span></label>
+                            <label class="service-checkbox"><input type="checkbox" value="صبغه الوان|250"> <span class="service-name">صبغه الوان</span> <span class="service-price"></span></label>
+                        </div>
+                    </div>
+                    <div class="services-category">
+                        <div class="category-title">👶 خدمات الأطفال</div>
+                        <div class="services-grid">
+                            <label class="service-checkbox"><input type="checkbox" value="حلاقه اطفال|90"> <span class="service-name">حلاقه اطفال</span> <span class="service-price"></span></label>
+                            <label class="service-checkbox"><input type="checkbox" value="حلاقه اطفال جولد|100"> <span class="service-name">حلاقه اطفال جولد</span> <span class="service-price"></span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- <div class="price-display">
+                <span>💰 إجمالي السعر: </span>
+                <span id="totalPrice" class="price-value">0</span>
+                <span> ج</span>
+            </div> -->
+            
+            <div class="form-group">
+                <label>الاسم بالكامل</label>
+                <input type="text" id="name" placeholder="مثال: أحمد محمد" class="gold-input">
+            </div>
+            
+            <div class="form-group">
+                <label>رقم الموبايل</label>
+                <input type="tel" id="phone" placeholder="01xxxxxxxxx" class="gold-input">
+            </div>
+            
+            <button id="bookBtn" class="gold-btn">احجز الآن</button>
+            <button id="waitingBtn" class="gold-btn waiting-btn">⏳ ضعني في قائمة الانتظار</button>
+            <div id="message" class="message"></div>
+        </div>
+        
+        <div class="waiting-section">
+            <h3 class="gold-text">⏳ قوائم الانتظار</h3>
+            <div class="waiting-container">
+                <div class="waiting-card"><h4>عمرو</h4><div class="waiting-queue"><div class="queue-header">قائمة الانتظار</div><ul id="queueAmr" class="queue-list"><li class="empty-msg">⭐ لا يوجد زبائن</li></ul></div></div>
+                <div class="waiting-card"><h4>يوسف</h4><div class="waiting-queue"><div class="queue-header">قائمة الانتظار</div><ul id="queueYoussef" class="queue-list"><li class="empty-msg">⭐ لا يوجد زبائن</li></ul></div></div>
+                <div class="waiting-card"><h4>سعد</h4><div class="waiting-queue"><div class="queue-header">قائمة الانتظار</div><ul id="queueSaad" class="queue-list"><li class="empty-msg">⭐ لا يوجد زبائن</li></ul></div></div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p class="designer">Designed & Developed by <span class="designer-name">Devora_TECH
+            </span></p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 15px;">
+            <a href="dashboard.html" style="color: #d4af37; text-decoration: none; font-size: 0.8em;">📊 لوحة التحكم</a>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
