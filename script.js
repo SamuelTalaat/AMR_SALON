@@ -303,7 +303,7 @@ document.getElementById('bookBtn').addEventListener('click', async () => {
 └─────────────────────────┘`;
         
         const encodedMessage = encodeURIComponent(whatsappMessage);
-        const whatsappUrl = `https://wa.me/20100082336?text=${encodedMessage}`;
+        const whatsappUrl = `https://wa.me/201000823374?text=${encodedMessage}`;
         
         // تنظيف الحقول
         document.getElementById('name').value = '';
